@@ -48,7 +48,7 @@ export default function Index() {
           <Button
             title="Disconnect"
             onPress={() => {
-              disconnect();
+              disconnect({ connector: connectors[0] });
             }}
           />
         )}

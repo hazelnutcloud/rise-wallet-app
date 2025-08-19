@@ -15,32 +15,48 @@ export const wagmiConfig = createConfig({
     porto({
       ...riseTestnetConfig,
       mode: Mode.rpcServer({
-        keystoreHost: "rise-wallet-testnet.vercel.app",
+        keystoreHost: "asset-pepper24bots-projects.vercel.app",
         webAuthn: {
           createFn: async (opts) => {
             if (!opts?.publicKey) return null;
-            const optsNew = {
-              ...opts.publicKey,
-              challenge: btoa(
-                bytesToHex(opts.publicKey.challenge as ByteArray),
-              ),
-              user: {
-                ...opts.publicKey.user,
-                id: btoa(bytesToHex(opts.publicKey.user.id as ByteArray)),
-              },
-              signal: opts.signal,
-            } as const;
-            console.log(JSON.stringify(optsNew, null, 2));
-            const res = await passkeys.create(optsNew);
-            console.log(res);
-            return res;
+
+            try {
+              const optsNew = {
+                ...opts.publicKey,
+                challenge: btoa(
+                  bytesToHex(opts.publicKey.challenge as ByteArray)
+                ),
+                // challenge: bufferToBase64URLString(
+                //   opts.publicKey.challenge as ArrayBuffer
+                // ),
+                user: {
+                  ...opts.publicKey.user,
+                  id: btoa(bytesToHex(opts.publicKey.user.id as ByteArray)),
+                  // id: bufferToBase64URLString(
+                  //   opts.publicKey.user.id as ArrayBuffer
+                  // ),
+                },
+                signal: opts.signal,
+                excludeCredentials: [],
+                timeout: 60000,
+              } as const;
+
+              console.log("credentials:: ", optsNew);
+              console.log(JSON.stringify(optsNew, null, 2));
+              const res = await passkeys.create(optsNew as any);
+              console.log("response:: ", res);
+              return res;
+            } catch (e) {
+              console.log("error:: ", e);
+              return null;
+            }
           },
           getFn: async (opts) => {
             if (!opts?.publicKey) return null;
             return await passkeys.get({
               ...opts.publicKey,
               challenge: btoa(
-                bytesToHex(opts.publicKey.challenge as ByteArray),
+                bytesToHex(opts.publicKey.challenge as ByteArray)
               ),
             });
           },

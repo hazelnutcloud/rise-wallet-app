@@ -14,15 +14,15 @@ export const wagmiConfig = createConfig({
   connectors: [
     porto({
       ...riseTestnetConfig,
-      mode: Mode.rpcServer({
-        keystoreHost: "rise-wallet-testnet.vercel.app",
+      mode: Mode.relay({
+        keystoreHost: "asset-pepper24bots-projects.vercel.app",
         webAuthn: {
           createFn: async (opts) => {
             if (!opts?.publicKey) return null;
             const optsNew = {
               ...opts.publicKey,
               challenge: btoa(
-                bytesToHex(opts.publicKey.challenge as ByteArray),
+                bytesToHex(opts.publicKey.challenge as ByteArray)
               ),
               user: {
                 ...opts.publicKey.user,
@@ -40,7 +40,7 @@ export const wagmiConfig = createConfig({
             return await passkeys.get({
               ...opts.publicKey,
               challenge: btoa(
-                bytesToHex(opts.publicKey.challenge as ByteArray),
+                bytesToHex(opts.publicKey.challenge as ByteArray)
               ),
             });
           },
